@@ -17,6 +17,7 @@ function loadTasks() {
 function addTaskToList(task) {
   const li = document.createElement("li");
   li.innerHTML = `
+    <input type="checkbox" data-id="${task.id}">
         <span>${task.title}</span>
         <button data-id="${task.id}">Удалить</button>
     `;
@@ -24,6 +25,11 @@ function addTaskToList(task) {
 
   const deleteButton = li.querySelector("button");
   deleteButton.addEventListener("click", () => deleteTask(task.id));
+
+  const checkbox = li.querySelector("input[type='checkbox']");
+  checkbox.addEventListener("change", () =>
+    toggleTaskCompletion(task.id, checkbox.checked)
+  );
 }
 
 // Функция для удаления задачи
@@ -60,12 +66,22 @@ addTaskButton.addEventListener("click", () => {
   }
 });
 
+function toggleTaskCompletion(taskId, completed) {
+  fetch(`https://jsonplaceholder.typicode.com/todos/${taskId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ completed }),
+  })
+    .then((response) => response.json())
+    .then(() => {
+      // Здесь вы можете выполнить дополнительные действия при изменении состояния задачи, если необходимо
+    })
+    .catch((error) => {
+      console.error("Произошла ошибка при изменении состояния задачи:", error);
+    });
+}
+
 // Загрузить задачи при загрузке страницы
 loadTasks();
-
-
-
-
-
-
-
